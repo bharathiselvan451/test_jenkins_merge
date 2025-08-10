@@ -2,10 +2,9 @@ pipeline {
     agent any // Specifies that the pipeline can run on any available agent
 
     stages {
-        stage('Build') {
+        stage('Terraform plan') {
             steps {
-                echo 'Building the application...'
-                echo 'CONSISTENCY'
+                sh 'terraform plan'
                 // Replace with your actual build commands, e.g.,
                 // sh 'mvn clean install'
                 // sh 'npm install && npm run build'
@@ -14,7 +13,7 @@ pipeline {
 
         stage('Test') {
             steps {
-                echo 'Running tests...'
+                sh 'terraform validate -json'
                 // Replace with your actual test commands, e.g.,
                 // sh 'mvn test'
                 // sh 'npm test'
