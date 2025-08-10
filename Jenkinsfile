@@ -4,6 +4,12 @@ pipeline {
     stages {
         stage('Terraform plan') {
             steps {
+                sh 'terraform init'
+                // Replace with your actual build commands, e.g.,
+                // sh 'mvn clean install'
+                // sh 'npm install && npm run build'
+            }
+            steps {
                 sh 'terraform plan'
                 // Replace with your actual build commands, e.g.,
                 // sh 'mvn clean install'
