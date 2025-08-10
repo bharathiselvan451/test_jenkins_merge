@@ -1,20 +1,21 @@
 terraform {
   backend "s3" {
-    bucket                  = "terraform-s3-state-0223"
+    bucket                  = "terraform-s3-state-0224"
     key                     = "my-terraform-project"
-    region                  = "us-east-1"
+    dynamodb_table          = "tf-state-lock"
+    region                  = "us-east-2"
     shared_credentials_file = "~/.aws/credentials"
   }
 }
 
 provider "aws" {
-  region                  = "us-east-1"
+  region                  = "us-east-2"
 }
 
 
 
 resource "aws_instance" "this" {
-  ami = "ami-020cba7c55df1f615"
+  ami = "ami-0d1b5a8c13042c939"
   instance_type = "t2.micro"
   tags = {
     Name = "test-1"
