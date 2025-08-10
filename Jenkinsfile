@@ -2,13 +2,19 @@ pipeline {
     agent any // Specifies that the pipeline can run on any available agent
 
     stages {
-        stage('Terraform plan') {
-            steps {
+        stage('Terraform init') {
+        
+        steps {
                 sh 'terraform init'
                 // Replace with your actual build commands, e.g.,
                 // sh 'mvn clean install'
                 // sh 'npm install && npm run build'
             }
+        
+        
+        }
+        stage('Terraform plan') {
+            
             steps {
                 sh 'terraform plan'
                 // Replace with your actual build commands, e.g.,
