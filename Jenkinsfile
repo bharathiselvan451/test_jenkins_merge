@@ -5,6 +5,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the application...'
+                echo 'CONSISTENCY'
                 // Replace with your actual build commands, e.g.,
                 // sh 'mvn clean install'
                 // sh 'npm install && npm run build'
