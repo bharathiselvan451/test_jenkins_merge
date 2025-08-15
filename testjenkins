@@ -1,0 +1,58 @@
+pipeline {
+    agent any
+    
+    // This allows webhook trigger in addition to normal SCM triggers
+    triggers {
+        GenericTrigger(
+            token: 'pr-review',
+            genericVariables: [
+                [key: 'gh_event', value: '$.action'],
+                [key: 'review_state', value: '$.review.state'],
+                [key: 'pr_number', value: '$.pull_request.number'],
+                [key: 'pr_branch', value: '$.pull_request.head.ref']
+            ],
+            causeString: 'Triggered by Pull Request Review Event',
+            printContributedVariables: true,
+            printPostContent: true
+        )
+    }
+
+    stages {
+        stage('Event Info') {
+            steps {
+                script {
+                    echo "GitHub event action: ${env.gh_event}"
+                    echo "Review state: ${env.review_state}"
+                    echo "PR number: ${env.pr_number}"
+                    echo "PR branch: ${env.pr_branch}"
+                }
+            }
+        }
+
+        stage('Run only for review submitted') {
+            when {
+                expression {
+                    // Only run this stage if webhook was triggered and review was approved
+                    return env.gh_event == 'submitted' && env.review_state == 'approved'
+                }
+            }
+            steps {
+                echo "PR #${env.pr_number} has been approved — running pipeline tasks."
+                // Your post-approval tasks go here
+            }
+        }
+
+        stage('Normal PR build') {
+            when {
+                expression {
+                    // If triggered by normal PR event (no webhook variables set)
+                    return !env.gh_event
+                }
+            }
+            steps {
+                echo "Running normal PR build triggered by GitHub Branch Source plugin."
+                // Your usual build/test steps
+            }
+        }
+    }
+}
