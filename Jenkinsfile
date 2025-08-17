@@ -1,5 +1,18 @@
 pipeline {
-    agent any // Specifies that the pipeline can run on any available agent
+    agent any
+
+    triggers {
+        GenericTrigger(
+            token: 'mytoke', // must match ?token=pr-review in webhook URL
+            genericVariables: [
+                [key: 'gh_action',     value: '$.action']
+               
+            ],
+            causeString: 'Triggered by PR review webhook',
+            printContributedVariables: true, // show env vars in build logs
+            printPostContent: true           // dump JSON payload in build logs
+        )
+    }
 
     stages {
         stage('Terraform init') {
@@ -24,8 +37,36 @@ pipeline {
         }
 
         stage('Test') {
+            
             steps {
-                sh 'terraform validate -json'
+                
+                script {
+                     if (env.gh_action == "opened") {
+                            sh 'terraform validate -json'
+
+                     } 
+                 
+                  }
+                
+                // Replace with your actual test commands, e.g.,
+                // sh 'mvn test'
+                // sh 'npm test'
+                // junit '**/target/surefire-reports/*.xml' // For publishing JUnit test results
+            }
+        }
+        
+        stage('Apply') {
+            
+            steps {
+                
+                script {
+                     if (env.gh_action == "submitted") {
+                              sh 'terraform apply'
+                     } 
+                 
+                  }
+                
+                
                 // Replace with your actual test commands, e.g.,
                 // sh 'mvn test'
                 // sh 'npm test'
@@ -41,5 +82,4 @@ pipeline {
             }
         }
     }
-
 }
